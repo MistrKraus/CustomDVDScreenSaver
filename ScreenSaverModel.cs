@@ -23,8 +23,8 @@ namespace CustomDVDScreenSaver
 
         private int moveX;
         private int moveY;
-        private int distance = 5;
-        private int angle = 50;
+        private int distance;
+        private int angle;
 
         private PictureBox pic;
         private Image currentImage;
@@ -50,24 +50,26 @@ namespace CustomDVDScreenSaver
             this.timer.Interval = 10;
             this.timer.Elapsed += OnTimedEvent;
 
-            double radAngle = (angle * Math.PI) / 180;
-
-            this.moveX = (int)(this.distance * Math.Cos(radAngle));
-            this.moveY = (int)(this.distance * Math.Sin(radAngle)) * -1;
+            this.distance = 5;
+            this.angle = 50;
         }
 
         public void StartAnimation()
         {
+            // Count starting move attributes
+            double radAngle = (angle * Math.PI) / 180;
+
+            this.moveX = (int)(this.distance * Math.Cos(radAngle));
+            this.moveY = (int)(this.distance * Math.Sin(radAngle)) * -1;
+
             this.stopFlag = false;
             this.timer.Start();
-            //OnTimedEvent();
         }
 
         public void StopAnimation()
         {
             this.stopFlag = true;
             this.timer.Stop();
-            //GC.Collect();
         }
 
         /// <summary>
@@ -160,10 +162,16 @@ namespace CustomDVDScreenSaver
             return CollisionAngle.NONE;
         }
 
+        /// <summary>
+        /// Update move directions in there was a colistion detected
+        /// </summary>
+        /// <param name="colision">Direction of colision</param>
         private void UpdateDirections(CollisionAngle colision)
         {
             switch (colision)
             {
+                case CollisionAngle.NONE:
+                    return;
                 case CollisionAngle.TOP:
                     if (angle < 90)
                     {
@@ -207,14 +215,17 @@ namespace CustomDVDScreenSaver
                     }
 
                     break;
-                case CollisionAngle.NONE:
-                    return;
             }
 
             double radAngle = (angle * Math.PI) / 180;
 
             this.moveX = (int)(this.distance * Math.Cos(radAngle));
             this.moveY = (int)(this.distance * Math.Sin(radAngle)) * -1;
+        }
+
+        private void ChangeImage()
+        {
+
         }
 
         private void OnTimedEvent(Object source, ElapsedEventArgs e)
@@ -226,13 +237,8 @@ namespace CustomDVDScreenSaver
 
                 try
                 {
-
                     CollisionAngle colision = CheckCollision();
-
-                    if (colision != CollisionAngle.NONE)
-                    {
-                        UpdateDirections(colision);
-                    }
+                    UpdateDirections(colision);
 
                     this.pic.Invoke(
                         new Action(() =>

@@ -45,7 +45,7 @@ namespace CustomDVDScreenSaver
         {
             try
             {
-                Image img = Image.FromFile(Path.Combine(Directory.GetCurrentDirectory(), "../../resources/khaleesi.jpg"));
+                Image img = Image.FromFile(Path.Combine(Directory.GetCurrentDirectory(), ImagesModel.activeImagePaths[0]));
                 double ratio = img.Width / (double)img.Height;
 
                 int height = Screen.FromControl(this).Bounds.Height / 6;

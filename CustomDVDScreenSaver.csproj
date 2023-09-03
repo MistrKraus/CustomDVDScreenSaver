@@ -49,6 +49,7 @@
     <Compile Include="AbortableBackgroundWorker.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="ImagesModel.cs" />
     <Compile Include="ScreenSaverForm.cs">
       <SubType>Form</SubType>
     </Compile>
