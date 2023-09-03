@@ -28,7 +28,6 @@ namespace CustomDVDScreenSaver
 
         private PictureBox pic;
         private Image currentImage;
-        private IList<Image> images = new List<Image>();
 
         private System.Timers.Timer timer;
 
@@ -36,10 +35,21 @@ namespace CustomDVDScreenSaver
         private bool locked = false;
         private bool stopFlag = false;
 
-        public ScreenSaverModel(PictureBox pictureBox, IList<Image> images, int screenWidth, int screenHeight, Label lbl)
+        private Random random = new Random();
+
+        /// <summary>
+        /// Constructor - assign all properties
+        /// </summary>
+        /// <param name="pictureBox"></param>
+        /// <param name="screenWidth"></param>
+        /// <param name="screenHeight"></param>
+        /// <param name="lbl"></param>
+        public ScreenSaverModel(PictureBox pictureBox, int screenWidth, int screenHeight, Label lbl)
         {
+            this.currentImage = ImagesModel.Images[0];
+
             this.pic = pictureBox;
-            this.images = images;
+            this.pic.Image = this.currentImage;
 
             this.width = screenWidth;
             this.height = screenHeight;
@@ -225,7 +235,18 @@ namespace CustomDVDScreenSaver
 
         private void ChangeImage()
         {
+            if (ImagesModel.Images.Count == 1)
+            {
+                return;
+            }
 
+            this.currentImage = ImagesModel.Images[this.random.Next(ImagesModel.Images.Count)];
+
+            this.pic.Invoke(
+                new Action(() =>
+                {
+                    this.pic.Image = this.currentImage;
+                }));
         }
 
         private void OnTimedEvent(Object source, ElapsedEventArgs e)
@@ -238,6 +259,12 @@ namespace CustomDVDScreenSaver
                 try
                 {
                     CollisionAngle colision = CheckCollision();
+
+                    if (colision != CollisionAngle.NONE)
+                    {
+                        ChangeImage();
+                    }
+
                     UpdateDirections(colision);
 
                     this.pic.Invoke(

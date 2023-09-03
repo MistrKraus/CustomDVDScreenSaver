@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,7 +10,8 @@ namespace CustomDVDScreenSaver
 {
     static class ImagesModel
     {
-        private static readonly string DEFAULT_IMG = "../../resources/khaleesi.jpg";
+        private static readonly string DEFAULT_IMG_1 = "../../resources/khaleesi.jpg";
+        private static readonly string DEFAULT_IMG_2 = "../../resources/blue_circle.png";
 
         private static List<string> allImagePaths = new List<string>();
         public static List<string> AllImagePaths
@@ -26,6 +29,48 @@ namespace CustomDVDScreenSaver
             {
                 return activeImagePaths;
             }
+        }
+
+        public static List<Image> images = new List<Image>();
+        public static List<Image> Images
+        {
+            get
+            {
+                return images;
+            }
+        }
+
+        /// <summary>
+        /// Load all active images
+        /// Return not loaded images
+        /// </summary>
+        /// <returns></returns>
+        /// <remarks>
+        ///     09/23 PK - Created (Issue#2)
+        /// </remarks>
+        public static IList<string> LoadActiveImages(int imageHeight)
+        {
+            IList<string> notLoadedImages = new List<string>();
+
+            foreach (string path in activeImagePaths)
+            {
+                try
+                {
+                    Image img = Image.FromFile(Path.Combine(Directory.GetCurrentDirectory(), path));
+                    double ratio = img.Width / (double)img.Height;
+
+                    int height = imageHeight;
+                    int width = (int)(height * ratio);
+
+                    images.Add(new Bitmap(img, width, height));
+                }
+                catch (Exception e)
+                {
+                    notLoadedImages.Add(path);
+                }
+            }
+
+            return notLoadedImages;
         }
 
         /// <summary>
@@ -102,8 +147,10 @@ namespace CustomDVDScreenSaver
         /// <returns></returns>
         public static bool LoadDefaultImages()
         {
-            allImagePaths.Add(DEFAULT_IMG);
-            activeImagePaths.Add(DEFAULT_IMG);
+            allImagePaths.Add(DEFAULT_IMG_1);
+            allImagePaths.Add(DEFAULT_IMG_2);
+            activeImagePaths.Add(DEFAULT_IMG_1);
+            activeImagePaths.Add(DEFAULT_IMG_2);
 
             return true;
         }

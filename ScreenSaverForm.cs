@@ -128,14 +128,28 @@ namespace CustomDVDScreenSaver
 
         /// <summary>
         /// Start the screen saver window and the animation
+        /// Load images and check animation can be started
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
+        /// <remarks>
+        ///     09/23 PK - Added Can be started test (Issue#2)
+        /// </remarks>
         private void StartBtn_Click(object sender, EventArgs e)
         {
             if (ImagesModel.activeImagePaths.Count == 0)
             {
                 MessageBox.Show("Add an image to the \"Active images\" list to start the animation", "Animation can not be started", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                return;
+            }
+
+            // Issue#2
+            ImagesModel.LoadActiveImages(Screen.FromControl(this).Bounds.Height / 6);
+
+            if (ImagesModel.Images.Count == 0)
+            {
+                MessageBox.Show("\"Active images\" list does not contain images or the images can not be loaded", "Animation can not be started", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
                 return;
             }
